@@ -1,0 +1,90 @@
+CREATE PROCEDURE SP_InsertTB_M_Person
+	--@NIK AS varchar(50),
+	@FirstName AS varchar(50),
+	@LastName AS varchar(50),
+	@Phone AS varchar(50),
+	@BirthDate AS date,
+	@Salary AS int,
+	@Email AS varchar(50)
+AS
+BEGIN 
+	INSERT INTO TB_M_Person (NIK, FirstName, LastName, Phone, BirthDate, Salary, Email)
+	VALUES (NEXT VALUE FOR SQ_Person, @FirstName, @LastName, @Phone, @BirthDate, @Salary, @Email)
+END;
+GO
+
+/*RESET SP
+DROP PROC SP_InsertTB_M_Person
+*/
+
+--Trigger After Insert untuk membuat format NIK EMP04012101 dst
+CREATE TRIGGER TR_InsertTB_M_Person
+ON TB_M_Person AFTER INSERT
+AS
+BEGIN
+	UPDATE TB_M_Person
+	SET 
+		NIK = 'EMP04012101' + RIGHT('0' + CAST(i.NIK AS varchar),2)
+	FROM
+		inserted i
+	WHERE 
+		i.NIK = TB_M_Person.NIK
+
+	--Trigger untuk memasukkan data NIK dan password ke table Account
+	/*UPDATE TB_Account
+	SET
+		TB_Account.NIK = j.NIK,
+		TB_Account.[Password] = 'Password.' + CAST(j.NIK as varchar)
+	FROM
+		inserted j 
+	WHERE 
+		j.NIK = TB_Account.NIK*/
+
+	DECLARE 
+		@nik as varchar(50),
+		@pass as varchar(50)
+	SELECT 
+		@nik = j.NIK
+	FROM inserted j
+	SET
+		@pass = 'Password.' + @nik
+	INSERT INTO TB_Account
+	VALUES (@nik,@pass)
+END;
+GO
+
+TRIGGER LAMA buat update NIK
+/*UPDATE TB_M_Person
+	SET 
+		NIK = 'EMP04012101' + RIGHT('0' + CAST(i.NIK AS varchar),2)
+	FROM
+		inserted i
+	WHERE 
+		i.NIK = TB_M_Person.NIK
+	*/
+	--Trigger untuk memasukkan data NIK dan password ke table Account
+	/*UPDATE TB_Account
+	SET
+		TB_Account.NIK = j.NIK,
+		TB_Account.[Password] = 'Password.' + CAST(j.NIK as varchar)
+	FROM
+		inserted j 
+	WHERE 
+		j.NIK = TB_Account.NIK*/
+
+NMOMR 5
+CREATE PROCEDURE SP_RetrieveTB_M_PersonTB_EducationTB_M_University
+AS
+BEGIN
+	SELECT
+		tb.NIK,
+		CONCAT('Tn/Ny ', tb.FirstName , ' ',tb.LastName) as 'Full Name',
+		tb.Degree as 'Degree',
+		tb.[Name] as 'University'
+	FROM
+		TB_M_University u
+		JOIN TB_Education e ON u.[id number] = e.University_Id
+		JOIN TB_Profiling p ON p.Education_Id = e.Id
+		JOIN TB_M_Person per ON per.
+		
+END;

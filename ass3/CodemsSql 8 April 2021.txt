@@ -1,0 +1,254 @@
+Query 1:
+CREATE PROCEDURE SP_Insert_TB_T_Transaction
+	@OrderDate date
+	
+AS
+BEGIN
+	--SET NOCOUNT ON;
+	--Inserting data
+	INSERT INTO TB_T_Transaction(OrderDate) 
+	VALUES (@OrderDate)
+	
+END;
+
+Query 2:
+/*
+DROP TABLE TB_T_Transaction;
+CREATE TABLE TB_T_Transaction(
+	Id int IDENTITY(101,1),
+	OrderDate date
+)
+
+DROP PROCEDURE IF EXISTS SP_Insert_TB_T_Transaction
+*/
+
+EXECUTE SP_Insert_TB_T_Transaction '2012-10-05';
+EXECUTE SP_Insert_TB_T_Transaction '2012-10-15';
+EXECUTE SP_Insert_TB_T_Transaction '2012-11-05';
+EXECUTE SP_Insert_TB_T_Transaction '2012-11-20';
+EXECUTE SP_Insert_TB_T_Transaction '2012-11-30';
+
+
+--SELECT * from TB_T_Transaction
+
+Query 3:
+USE LatianPLSQL;
+GO
+
+CREATE PROCEDURE SP_Select_TB_T_Transaction	
+AS
+BEGIN
+	
+	SELECT * from [dbo].TB_T_Transaction
+	
+END;
+
+--EXECUTE SP_Select_TB_T_Transaction
+--DROP PROCEDURE IF EXISTS SP_Select_TB_T_Transaction
+
+Query5:
+CREATE PROCEDURE SP_Insert_TB_Supplier
+	@Name varchar(50),
+	@JoinDate date
+	
+AS
+BEGIN
+	--SET NOCOUNT ON;
+	--Inserting data
+	INSERT INTO TB_Supplier(name, JoinDate) 
+	VALUES (@Name, @JoinDate)
+	
+END;
+
+Query 6:
+/*
+DROP TABLE TB_Supplier
+DROP PROCEDURE IF EXISTS SP_Insert_TB_Supplier
+DROP TRIGGER IF EXISTS TR_InsertTB_Supplier
+*/
+
+CREATE TABLE TB_Supplier(
+	Id int IDENTITY(1,1),
+	Name varchar(50),
+	JoinDate date
+)
+GO
+
+CREATE TRIGGER TR_InsertTB_Supplier ON TB_Supplier
+FOR INSERT
+NOT FOR REPLICATION
+AS
+BEGIN
+	--DECLARE @Id int
+	--SELECT @Id = TB_supplier.Id FROM inserted
+	--SELECT CONVERT(varchar(10),@Id)
+	SELECT CONCAT('SP0',CONVERT(varchar(10),Id))as Id,[Name],JoinDate FROM TB_Supplier
+END;
+GO
+
+EXECUTE SP_Insert_TB_Supplier 'PT. Synnex Metrodata Indonesia', '2018-01-15';
+EXECUTE SP_Insert_TB_Supplier 'PT. Metrodata Indonesia', '2018-01-16';
+EXECUTE SP_Insert_TB_Supplier 'PT.itra Informatika Indonesia', '2018-01-16';
+EXECUTE SP_Insert_TB_Supplier 'PT. Synnex Metrodata Indonesia', '2018-01-15';
+
+
+--SELECT * from TB_Supplier
+
+Query 7:
+USE LatianPLSQL;
+GO
+/*
+DROP PROCEDURE IF EXISTS SP_Select_TB_Supplier
+
+EXECUTE SP_Select_TB_Supplier
+*/
+
+
+CREATE PROCEDURE SP_Select_TB_Supplier
+AS
+BEGIN
+	SELECT CONCAT('SP0',CONVERT(varchar(10),Id))as Id,[Name],JoinDate FROM TB_Supplier
+	--SELECT * FROM [dbo].TB_Supplier
+	--SELECT Id,[Name],JoinDate from [dbo].TB_Supplier
+	
+END;
+
+
+
+
+
+Query 8:
+CREATE PROCEDURE SP_InsertTB_Item
+	@Name varchar(50),
+	@Price int,
+	@Stock int,
+	@Supplier_Id varchar(50)
+AS
+BEGIN
+	INSERT INTO TB_Item 
+	VALUES(@Name, @Price, @Stock, @Supplier_Id)
+END;
+
+Query 9:
+/*
+DROP TABLE TB_Item
+DROP PROCEDURE IF EXISTS SP_InsertTB_Item
+DROP TRIGGER IF EXISTS TR_InsertTB_Item
+*/
+
+CREATE TABLE TB_Item(
+	Id int IDENTITY(1,1),
+	[Name] varchar(50),
+	Price int,
+	Stock int,
+	Supplier_Id varchar(50)
+)
+GO
+
+CREATE TRIGGER TR_InsertTB_Item ON TB_Item
+FOR INSERT
+NOT FOR REPLICATION
+AS
+BEGIN
+	
+	SELECT CONCAT('B0',CONVERT(varchar(10),Id))as Id,[Name],Price, Stock, Supplier_Id FROM TB_Item
+END;
+GO
+
+EXECUTE SP_InsertTB_Item 'Developer .Net', 6000000, 11, 'SP03';
+EXECUTE SP_InsertTB_Item 'Developer Java', 6000000, 10, 'SP02';
+EXECUTE SP_InsertTB_Item 'Developer C#', 5500000, 10, 'SP04';
+EXECUTE SP_InsertTB_Item 'Developer Python', 5500000, 10, 'SP02';
+
+--SELECT * from TB_Item
+
+QUery 10:
+USE LatianPLSQL;
+GO
+/*
+DROP PROCEDURE IF EXISTS SP_SelectTB_Item
+
+EXECUTE SP_SelectTB_Item
+*/
+
+
+CREATE PROCEDURE SP_SelectTB_Item
+AS
+BEGIN
+	SELECT CONCAT('SP0',CONVERT(varchar(10),Id))as Id,[Name],Price, Stock, Supplier_Id FROM TB_Item
+	--SELECT * FROM [dbo].TB_Supplier
+	--SELECT Id,[Name],JoinDate from [dbo].TB_Supplier
+	
+END;
+
+Query 11:
+CREATE PROCEDURE SP_InsertTB_T_TransactionItem
+	@Quantity int,
+	@Transaction_Id varchar(50),
+	@Item_Id int
+	
+AS
+BEGIN
+	INSERT INTO TB_T_TransactionItem
+	VALUES(@Quantity, @Transaction_Id, @Item_Id)
+END;
+
+Query 12:
+/*
+DROP TABLE TB_T_TransactionItem
+DROP PROCEDURE IF EXISTS SP_InsertTB_T_TransactionItem
+DROP TRIGGER IF EXISTS TR_InsertTB_T_TransactionItem
+*/
+
+CREATE TABLE TB_T_TransactionItem(
+	Id int IDENTITY(1,1),
+	Quantity int,
+	Transaction_Id varchar(50),
+	item_Id varchar(50)
+)
+GO
+
+CREATE TRIGGER TR_InsertTB_T_TransactionItem ON TB_T_TransactionItem
+FOR INSERT
+NOT FOR REPLICATION
+AS
+BEGIN
+	
+	SELECT CONCAT('0',CONVERT(varchar(10),Id))as Id, Quantity, Transaction_Id, Item_Id FROM TB_T_TransactionItem
+END;
+GO
+
+EXECUTE SP_InsertTB_T_TransactionItem 10,'101','B01';
+EXECUTE SP_InsertTB_T_TransactionItem 5,'101','B02';
+EXECUTE SP_InsertTB_T_TransactionItem 4,'102','B04';
+EXECUTE SP_InsertTB_T_TransactionItem 5,'103','B03';
+EXECUTE SP_InsertTB_T_TransactionItem 10,'104','B04';
+EXECUTE SP_InsertTB_T_TransactionItem 3,'105','B02';
+
+--SELECT * from TB_T_TransactionItem
+
+Query 13:
+USE LatianPLSQL;
+GO
+/*
+DROP PROCEDURE IF EXISTS SP_SelectTB_T_TransactionItem
+
+EXECUTE SP_SelectTB_T_TransactionItem
+*/
+
+
+CREATE PROCEDURE SP_SelectTB_T_TransactionItem
+AS
+BEGIN
+	--SELECT CONCAT('0',CONVERT(varchar(10),Id))as Id,Quantity,Transaction_Id, Item_Id FROM TB_T_TransactionItem
+	--SELECT * FROM [dbo].TB_T_TransactionItem
+	--SELECT Id,[Name],JoinDate from [dbo].TB_Supplier
+	
+END;
+
+
+
+
+
+
+
